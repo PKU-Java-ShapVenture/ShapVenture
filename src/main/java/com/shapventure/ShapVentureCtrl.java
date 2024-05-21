@@ -58,12 +58,12 @@ class ShapeVentureCtrl {
         }
     }
     private static void saveGame() {
-        // TODO: save game to file
-        getsp("message").set("Game saved successfully!");
+        getSaveLoadService().saveAndWriteTask("save.sav").run();
+        getsp("message").set(gets("message")+"\nGame saved successfully!");
     }
 
     private static void loadGame() {
-        // TODO: load game from file
-        getsp("message").set("Game loaded successfully!");
+        getSaveLoadService().readAndLoadTask("save.sav").run();
+        getsp("message").set("Game loaded successfully!\n"+gets("message"));
     }
 }

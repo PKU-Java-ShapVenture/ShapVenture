@@ -21,6 +21,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import com.almasb.fxgl.core.serialization.Bundle;
+import com.almasb.fxgl.profile.DataFile;
+import com.almasb.fxgl.profile.SaveLoadHandler;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -63,7 +66,12 @@ public class ShapVentureApp extends GameApplication {
         leftTextArea.setPrefSize(200, 400);
         Label healthLabel = new Label();
         healthLabel.setFont(new Font(20));
-        healthLabel.textProperty().bind(getip("health").asString("生命值: %d"));//这里我想按照 生命值/最大生命值：health/maxhealth 的写法
+        //这里我想按照 生命值/最大生命值：health/maxhealth 的写法来显示生命值
+        healthLabel.textProperty().bind(Bindings.concat("生命值：")
+                .concat(getip("health").asString())
+                .concat("/")
+                .concat(getip("maxhealth").asString()));
+
         Label attackLabel = new Label();
         attackLabel.setFont(new Font(20));
         attackLabel.textProperty().bind(getip("attack").asString("攻击力: %d"));
@@ -142,6 +150,76 @@ public class ShapVentureApp extends GameApplication {
 
         // 设置根节点
         FXGL.getGameScene().addUINode(mainPane);
+
+        //init save & load service
+        getSaveLoadService().addHandler(new SaveLoadHandler() {
+            @Override
+            public void onSave(DataFile data) {
+                var bundle = new Bundle("gameData");
+                int health = geti("health");
+                int maxhealth = geti("maxhealth");
+                int shield = geti("shield");
+                int maxshield = geti("maxshield");
+                int recovery = geti("recovery");
+                int attack = geti("attack");
+                int bonusdamagerate = geti("bonusdamagerate");
+                int armor = geti("armor");
+                int money = geti("money");
+                int exp = geti("exp");
+                int level = geti("level");
+                int score = geti("score");
+                boolean levelFinished = getb("levelFinished");
+                String message = gets("message");
+                bundle.put("health", health);
+                bundle.put("maxhealth", maxhealth);
+                bundle.put("shield", shield);
+                bundle.put("maxshield", maxshield);
+                bundle.put("recovery", recovery);
+                bundle.put("attack", attack);
+                bundle.put("bonusdamagerate", bonusdamagerate);
+                bundle.put("armor", armor);
+                bundle.put("money", money);
+                bundle.put("exp", exp);
+                bundle.put("level", level);
+                bundle.put("score", score);
+                bundle.put("levelFinished", levelFinished);
+                bundle.put("message", message);
+                data.putBundle(bundle);
+            }
+
+            @Override
+            public void onLoad(DataFile data) {
+                var bundle = data.getBundle("gameData");
+                int health = bundle.get("health");
+                int maxhealth = bundle.get("maxhealth");
+                int shield = bundle.get("shield");
+                int maxshield = bundle.get("maxshield");
+                int recovery = bundle.get("recovery");
+                int attack = bundle.get("attack");
+                int bonusdamagerate = bundle.get("bonusdamagerate");
+                int armor = bundle.get("armor");
+                int money = bundle.get("money");
+                int exp = bundle.get("exp");
+                int level = bundle.get("level");
+                int score = bundle.get("score");
+                boolean levelFinished = bundle.get("levelFinished");
+                String message = bundle.get("message");
+                set("health", health);
+                set("maxhealth", maxhealth);
+                set("shield", shield);
+                set("maxshield", maxshield);
+                set("recovery", recovery);
+                set("attack", attack);
+                set("bonusdamagerate", bonusdamagerate);
+                set("armor", armor);
+                set("money", money);
+                set("exp", exp);
+                set("level", level);
+                set("score", score);
+                set("levelFinished", levelFinished);
+                set("message", message);
+            }
+        });
     }
 
     public static void main(String[] args) {
