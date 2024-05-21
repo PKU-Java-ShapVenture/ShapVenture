@@ -32,13 +32,24 @@ public class ShapVentureApp extends GameApplication {
         settings.setHeight(600);
         settings.setTitle("ShapVenture");
     }
-    // 初始化游戏变量，可以修改
+    /* 
+    初始化游戏变量，可以修改
+    如果需要加入局外的成长，可以改里面的常值为一个表达式
+    */
     @Override
     protected void initGameVars(Map<String, Object> vars) {
-        vars.put("health", 100);
+        vars.put("health", 100);//血量只能在特殊的区域进行回复
+        vars.put("maxhealth", 100);//恢复生命不得超过当前的生命上限
+        vars.put("shield", 30);//护盾会优先于血量收到伤害，每次击杀敌人后恢复recovery的值
+        vars.put("maxshield", 30);//不得超过最大护盾
+        vars.put("recovery", 10);//恢复值
         vars.put("attack", 10);
+        vars.put("bonusdamagerate", 5);//按照百分数计数，除100后为直接增伤比例，模100后为额外增伤概率。例如350即伤害首先为原来的3倍，有50%概率再额外增加一倍
+        vars.put("armor", 1);//受到攻击后直接的伤害减少
+        vars.put("money", 0);//每局内的货币，可以购买升级
+        vars.put("exp", 0);//每局之外的货币，可以要可以不要
         vars.put("level", 1);
-        vars.put("score", 0);
+        vars.put("score", 0);//就按照击败之后增加怪物血量*怪物伤害的值的算法？
         vars.put("levelFinished", true);
         vars.put("message", "Welcome to ShapVenture!");
     }
@@ -52,13 +63,13 @@ public class ShapVentureApp extends GameApplication {
         leftTextArea.setPrefSize(200, 400);
         Label healthLabel = new Label();
         healthLabel.setFont(new Font(20));
-        healthLabel.textProperty().bind(getip("health").asString("生命值: %d"));
+        healthLabel.textProperty().bind(getip("health").asString("生命值: %d"));//这里我想按照 生命值/最大生命值：health/maxhealth 的写法
         Label attackLabel = new Label();
         attackLabel.setFont(new Font(20));
         attackLabel.textProperty().bind(getip("attack").asString("攻击力: %d"));
         Label levelLabel = new Label();
         levelLabel.setFont(new Font(20));
-        levelLabel.textProperty().bind(getip("level").asString("层数: %d"));
+        levelLabel.textProperty().bind(getip("level").asString("层数: %d/100"));//一共100层
         Label scoreLabel = new Label();
         scoreLabel.setFont(new Font(20));
         scoreLabel.textProperty().bind(getip("score").asString("分数: %d"));
