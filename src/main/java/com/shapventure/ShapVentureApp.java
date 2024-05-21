@@ -44,7 +44,7 @@ public class ShapVentureApp extends GameApplication {
         vars.put("maxshield", 30);//不得超过最大护盾
         vars.put("recovery", 10);//恢复值
         vars.put("attack", 10);
-        vars.put("bonusdamagerate", 5);//按照百分数计数，除100后为直接增伤比例，模100后为额外增伤概率。例如350即伤害首先为原来的3倍，有50%概率再额外增加一倍
+        vars.put("bonusdamagerate", 5);//按照百分数计数，除100后为直接增伤比例，模100后为额外增伤概率。例如350即伤害首先为原来的4倍，有50%概率再额外增加一倍
         vars.put("armor", 1);//受到攻击后直接的伤害减少
         vars.put("money", 0);//每局内的货币，可以购买升级
         vars.put("exp", 0);//每局之外的货币，可以要可以不要
