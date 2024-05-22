@@ -137,42 +137,7 @@ public class Zone {
     }
 
     private void shopping() {
-        // 下方按钮区域
-        HBox bottomPane = new HBox();
-        bottomPane.setPrefSize(800, 200);
-
-        Button button1 = new Button("按钮1");
-        button1.setFont(new Font(20));
-        button1.setPrefSize(200, 100);
-        button1.textProperty().bind(Bindings.when(getbp("levelFinished")).then("购买A").otherwise("购买A"));
-        button1.setOnAction(e -> ShapeVentureCtrl.handleButtonPress1());
-
-        Button button2 = new Button("按钮2");
-        button2.setFont(new Font(20));
-        button2.setPrefSize(200, 100);
-        button2.textProperty().bind(Bindings.when(getbp("levelFinished")).then("购买B").otherwise("购买B"));
-        button2.setOnAction(e -> ShapeVentureCtrl.handleButtonPress2());
-
-        Button button3 = new Button("按钮3");
-        button3.setFont(new Font(20));
-        button3.setPrefSize(200, 100);
-        button3.textProperty().bind(Bindings.when(getbp("levelFinished")).then("购买C").otherwise("购买C"));
-        button3.setOnAction(e -> ShapeVentureCtrl.handleButtonPress3());
-
-        // 用于均匀分布按钮的间隔
-        Region spacer1 = new Region();
-        Region spacer2 = new Region();
-        Region spacer3 = new Region();
-        Region spacer4 = new Region();
-        bottomPane.getChildren().add(0, spacer1);
-        bottomPane.getChildren().add(2, spacer2);
-        bottomPane.getChildren().add(4, spacer3);
-        bottomPane.getChildren().add(6, spacer4);
-        HBox.setHgrow(spacer1, Priority.ALWAYS);
-        HBox.setHgrow(spacer2, Priority.ALWAYS);
-        HBox.setHgrow(spacer3, Priority.ALWAYS);
-        HBox.setHgrow(spacer4, Priority.ALWAYS);
-
+        
     }
     
     private void levelBonus() {
