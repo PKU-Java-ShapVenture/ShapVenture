@@ -150,9 +150,9 @@ public class Zone {
     }
 }
 
-//Entry包含敌人的各种词条
+//Entry包含敌人的各种词条，every为通配符，none为无词条配组（其他格类型可能使用），boss为boss专属词条
 enum Entry {
-    a, b, c
+    a, b, c, none, every, boss
 }
 
 //Type包含各种可能的地格类型
