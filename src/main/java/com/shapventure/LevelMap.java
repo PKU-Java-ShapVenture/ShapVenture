@@ -68,6 +68,7 @@ public class LevelMap {
         ShopItem back=new ShopItem(type, randomNumber, recentcoin);
         return back;
     }
+
     private Zone randomShop(int recentcoin)
     {
         Zone newzone=new Zone();
@@ -106,7 +107,7 @@ public class LevelMap {
             case 99:
                 tagA=Entry.boss;
                 tagB=Entry.boss;
-                enemyhealth=100;
+                enemyhealth=1000;
                 enemyattack=80;
                 break;
             default:
@@ -142,41 +143,102 @@ public class LevelMap {
         newzone.set(Type.enemy, enemyhealth, enemyattack, tagA, tagB, null, null, null);
         return newzone;
     }
+
+    private Zone randomAbility()
+    {
+        Zone newZone=new Zone();
+        return newZone;
+    }
+    /*
+     * coinsType决定生成经验还是金币：0为随机，1为经验，2为金币
+     * 随机时90%概率为金币
+     */
+    private Zone randomCoins(int coinsType)
+    {
+        Zone newZone=new Zone();
+        if(coinsType==0)
+        {
+            if(aRandom.nextInt(10)==0)
+            coinsType=1;
+            else coinsType=2;
+        }
+        
+        if(coinsType==1)
+        newZone.set(Type.coins, 1, 10, Entry.every, Entry.every, null, null, null);
+        else newZone.set(Type.coins, 2, 20, Entry.every, Entry.every, null, null, null);
+
+        return newZone;
+    }
+
+    
     /*
      * 传入当前层数（作为生成质量）、生成的区域处于的位置、
      * 当前的货币数量（在生成商店的时候可以决定生成的商品价值）
      * 33层、66层、99层作为固定的boss层，100层作为最终奖励层
      * boss层按照shop+enemy+ability的固定格式生成
+     * zoneChance[]中：0为empty生成概率、1为enemy生成概率、2为shop生成概率、3为ability生成概率、4为coins生成概率
      */
     private Zone randomZone(int recentLevel,int zonePlace,int recentcoin)
     {
         Zone newZone=new Zone();
-        Type zoneType=Type.empty;
+        int zoneChance[]={0,0,0,0,0};
         switch (recentLevel) {
             case 33: case 66: case 99:
                 switch (zonePlace) {
                     case 1:
-                        zoneType=Type.shop;
                         newZone=randomShop(recentcoin);
                         break;
                     case 2:
-                        zoneType=Type.enemy;
                         newZone=randomEnemy(recentLevel,zonePlace);
                         break;
                     case 3:
-                        zoneType=Type.ability;
-
+                        newZone=randomAbility();
                         break;
                     }
                 break;
             case 100:
-
+                newZone=randomCoins(1);
                 break;
             default:
-
+                switch(zonePlace){
+                    case 1:
+                        int chance1[]={0,100,0,0,10};
+                        zoneChance=chance1;
+                        break;
+                    case 2:
+                        int chance2[]={5,100,15,10,5};
+                        zoneChance=chance2;
+                        break;
+                    case 3:
+                        int chance3[]={5,100,10,15,5};
+                        zoneChance=chance3;
+                        break;
+                }
+                normalRandomZone(zoneChance, recentLevel, recentcoin,zonePlace);
                 break;
         }
         return newZone;
+    }
+    private Zone normalRandomZone(int chance[],int recentLevel,int recentcoin,int zonePlace)
+    {
+        Zone newZone=new Zone();
+        int totalChance=chance[0]+chance[1]+chance[2]+chance[3]+chance[4];
+        int randomNum=aRandom.nextInt(totalChance);
+        if(randomNum<chance[0])
+        {
+            newZone.set(Type.empty, 0, 0, Entry.every, Entry.every, null, null, null);
+            return newZone;
+        }
+        randomNum-=chance[0];
+        if(randomNum<chance[1])
+            return randomEnemy(recentLevel, zonePlace);
+        randomNum-=chance[1];
+        if(randomNum<chance[2])
+            return randomShop(recentcoin);
+        randomNum-=chance[2];
+        if(randomNum<chance[3])
+            return randomAbility();
+        return randomCoins(0);
     }
     /*
      * 奖励层获得3份经验？
@@ -189,5 +251,6 @@ public class LevelMap {
         zoneA=randomZone(currentLevel, 0, currentCoin);
         zoneB=randomZone(currentLevel, 1, currentCoin);
         zoneC=randomZone(currentLevel, 2, currentCoin);
+
     }
 }
