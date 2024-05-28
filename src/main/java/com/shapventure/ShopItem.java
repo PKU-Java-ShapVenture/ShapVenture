@@ -28,7 +28,34 @@ public class ShopItem {
         }
 
         public void work() {
+            switch (itemType) {
+                case 0:
+                    getip("attack").set(geti("attack") + number);
+                    break;
+                case 1:
+                    getip("maxhealth").set(geti("maxhealth") + number);
+                    getip("health").set(min(geti("maxhealth"), geti("health") + number));
+                    break;
+                case 2:
+                    getip("health").set(min(geti("maxhealth"), geti("health") + number));
+                    break;
+                case 3:
+                    getip("maxshield").set(geti("maxshield") + number);
+                    getip("shield").set(min(geti("maxshield"), geti("shield") + number));
+                    break;
+                case 4:
+                    getip("recovery").set(geti("recovery") + number);
+                    break;
+                case 5:
+                    getip("bonusdamagerate").set(geti("bonusdamagerate") + number);
+                    break;
+                case 6:
+                    getip("armor").set(geti("armor") + number);
+                    break;
 
+                default:
+                    break;
+            }
         }
         
         public void purchase() {
