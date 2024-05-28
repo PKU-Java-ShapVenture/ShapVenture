@@ -5,9 +5,6 @@ import static com.almasb.fxgl.dsl.FXGL.*;
 import java.util.Random;
 
 public class Zone {
-    
-    
-
     protected Type zoneType;
     protected int health, attack;
     protected Entry entry1, entry2;
@@ -40,23 +37,23 @@ public class Zone {
                 int score = health * attack;
                 fight();
                 if (health <= 0)
-                    getip("score").set(score);
+                    getip("score").set(geti("score") + score);
+                getip("shield").set(min(geti("maxshield"), geti("shield") + geti("recovery")));
                 break;
-
-            case shop:
-                shopping();
-                break;
-
-            case ability:
-                shopping();
-                break;
-
             case endOfLevel:
                 levelBonus();
                 break;
 
             case coins:
                 pickup();
+                break;
+                
+            case shop:
+                System.out.println("错误调用");
+                break;
+
+            case ability:
+                System.out.println("错误调用");
                 break;
 
             default:
@@ -69,7 +66,7 @@ public class Zone {
         Random bonus = new Random();
         int takeDamage = 0, dealDamage = 0;
 
-        while (health >= 0 && geti("health") >= 0) {
+        while (health > 0 && geti("health") > 0) {
 
             try{
                 Thread.sleep(100);
@@ -78,7 +75,7 @@ public class Zone {
             ;
 
             //玩家受到的伤害
-            takeDamage = attack - geti("armor");
+            takeDamage = max(1, attack - geti("armor"));
             getip("shield").set(geti("shield") - takeDamage);
             if (geti("shield") < 0) {
                 takeDamage = 0 - geti("shield");
@@ -97,17 +94,16 @@ public class Zone {
 
         return;
     }
-
-    private void shopping() {
-        
-    }
     
     private void levelBonus() {
         itemA.work();
     }
 
     private void pickup() {
-        getip("money").set(geti("money") + itemA.number);
+        if(health==1)
+            getip("money").set(geti("money") + attack);
+        else
+            getip("exp").set(geti("exp") + attack);
         return;
     }
 }
