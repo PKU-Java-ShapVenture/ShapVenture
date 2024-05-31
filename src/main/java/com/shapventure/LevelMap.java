@@ -61,8 +61,8 @@ public class LevelMap {
                 recentcoin=randomNumber*25;
                 break;
             case 6:
-                randomNumber=recentcoin/50;
-                recentcoin=randomNumber*50;
+                randomNumber=recentcoin/75;
+                recentcoin=randomNumber*75;
                 break;
         }
         ShopItem back=new ShopItem(type, randomNumber, recentcoin);
@@ -72,7 +72,7 @@ public class LevelMap {
     private Zone randomShop(int recentcoin)
     {
         Zone newzone=new Zone();
-        int chance[]={100,100,geti("health")*200/geti("maxhealth"),100,100,100,80};
+        int chance[]={100,100,geti("health")*200/geti("maxhealth"),100,100,100,50};
         int type1=randomShopType(chance[0],chance[1],chance[2],chance[3],chance[4],chance[5],chance[6]);
         chance[type1]=chance[type1]/11;
         int type2=randomShopType(chance[0],chance[1],chance[2],chance[3],chance[4],chance[5],chance[6]);
@@ -244,6 +244,47 @@ public class LevelMap {
      * 奖励层获得3份经验？
      * A、B、C分别生成
      */
+    private int taghash(Entry a)
+    {
+        switch (a) {
+            case every:
+                return 0;
+            case none:
+                return 1;
+            case a:
+                return 31;
+            case b:
+                return 43;
+            case c:
+                return 47;
+            default:
+                return 419;
+        }
+    }
+    /*
+     * 这里every表示全为通配符，a表示全为a词条，none表示无搭配
+     */
+    private Entry countEntry(int entrytag)
+    {
+        if(entrytag==0)
+        return Entry.every;
+        if(entrytag%31==0)
+        return Entry.a;
+        if(entrytag%43==0)
+        return Entry.b;
+        if(entrytag%47==0)
+        return Entry.c;
+        return Entry.none;
+    }
+    /*
+     * 这里需要考虑一下不同词条搭配的奖励是什么，每一行的词条为第一个词条（决定了怪物的类型）
+     *                   通配符        A词条        B词条         C词条         无搭配
+     * 通配符            护甲+4        不存在       不存在        不存在         不存在
+     * A词条             不存在        恢复+10      恢复+10       护甲+2        金币+25
+     * B词条             不存在        攻击力+8     奖励攻击率+10  攻击力+8      金币+25
+     * C词条             不存在        生命+75      护盾+75       生命+75       金币+25
+     * 无搭配            不存在        金币+20      金币+20       金币+20        无奖励
+     */
     public void randommap()
     {
         int currentLevel=geti("level");
@@ -251,6 +292,8 @@ public class LevelMap {
         zoneA=randomZone(currentLevel, 0, currentCoin);
         zoneB=randomZone(currentLevel, 1, currentCoin);
         zoneC=randomZone(currentLevel, 2, currentCoin);
-
+        int entrya=taghash(zoneA.entry1)+taghash(zoneB.entry1)+taghash(zoneC.entry1);
+        int entryb=taghash(zoneA.entry2)+taghash(zoneB.entry2)+taghash(zoneC.entry2);
+        Entry xa=countEntry(entrya),xb=countEntry(entryb);
     }
 }
