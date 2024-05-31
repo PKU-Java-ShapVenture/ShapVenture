@@ -34,14 +34,14 @@ public class ShopItem {
                     break;
                 case 1:
                     getip("maxhealth").set(geti("maxhealth") + number);
-                    getip("health").set(min(geti("maxhealth"), geti("health") + number));
+                    getip("health").set(Math.min(geti("maxhealth"), geti("health") + number));
                     break;
                 case 2:
-                    getip("health").set(min(geti("maxhealth"), geti("health") + number));
+                    getip("health").set(Math.min(geti("maxhealth"), geti("health") + number));
                     break;
                 case 3:
                     getip("maxshield").set(geti("maxshield") + number);
-                    getip("shield").set(min(geti("maxshield"), geti("shield") + number));
+                    getip("shield").set(Math.min(geti("maxshield"), geti("shield") + number));
                     break;
                 case 4:
                     getip("recovery").set(geti("recovery") + number);
