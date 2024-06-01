@@ -41,13 +41,23 @@ public class Zone {
                 getip("shield").set(Math.min(geti("maxshield"), geti("shield") + geti("recovery")));
                 break;
             case endOfLevel:
-                levelBonus();
+                switch (attack) {
+                    case 0:
+                        levelBonus();
+                        break;
+                    case 1:
+                        getip("money").set(geti("money") + health);
+                    case 2:
+                        break;
+                    default:
+                        break;
+                }
                 break;
 
             case coins:
                 pickup();
                 break;
-                
+
             case shop:
                 System.out.println("错误调用");
                 break;
