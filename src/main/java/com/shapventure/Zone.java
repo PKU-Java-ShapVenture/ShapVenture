@@ -75,7 +75,7 @@ public class Zone {
             ;
 
             //玩家受到的伤害
-            takeDamage = max(1, attack - geti("armor"));
+            takeDamage = Math.max(1, attack - geti("armor"));
             getip("shield").set(geti("shield") - takeDamage);
             if (geti("shield") < 0) {
                 takeDamage = 0 - geti("shield");
