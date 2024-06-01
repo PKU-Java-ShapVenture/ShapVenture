@@ -1,12 +1,11 @@
 package com.shapventure;
-
 import static com.almasb.fxgl.dsl.FXGL.geti;
 
 import java.util.Random;
 
 public class LevelMap {
-    Random aRandom=new Random();
-    Zone zoneA=new Zone(),zoneB=new Zone(),zoneC=new Zone(),zoneLast=new Zone();
+    private Random aRandom=new Random();
+    protected Zone zoneA=new Zone(),zoneB=new Zone(),zoneC=new Zone(),zoneLast=new Zone();
     /*
      * 生成商店区间的函数，将类型生成和数值生成单独取出
      */
@@ -147,6 +146,15 @@ public class LevelMap {
     private Zone randomAbility()
     {
         Zone newZone=new Zone();
+        int shoptype1=randomShopType(100, 100, 0, 100, 100, 100, 100);
+        int shoptype2=randomShopType(100, 100, 0, 100, 100, 100, 100);
+        int shoptype3=randomShopType(100, 100, 0, 100, 100, 100, 100);
+        int randomNumber1=aRandom.nextInt(200)+100,randomNumber2=aRandom.nextInt(200)+100,randomNumber3=aRandom.nextInt(200)+100;
+        int weight[]={20,4,1000,5,25,75};
+        ShopItem aShopItem=new ShopItem(shoptype1, randomNumber1/weight[shoptype1], 0);
+        ShopItem bShopItem=new ShopItem(shoptype2, randomNumber2/weight[shoptype2], 0);
+        ShopItem cShopItem=new ShopItem(shoptype1, randomNumber3/weight[shoptype3], 0);
+        newZone.set(Type.ability, 0, 0, Entry.none, Entry.none, aShopItem, bShopItem, cShopItem);
         return newZone;
     }
     /*
@@ -277,12 +285,17 @@ public class LevelMap {
         return Entry.none;
     }
     /*
+     * 如果生成的金币词条该做什么判断？
+     * 初步想法是在最后为金币词条的时候attack数值会传为1，health数值为奖励金币值
+     * 非金币词条则还是返回到Zone的ItemA里面，attack数值为0
+     * 无奖励会让attack值为2，防止不合法调用
+     * 
      * 这里需要考虑一下不同词条搭配的奖励是什么，每一行的词条为第一个词条（决定了怪物的类型）
      *                   通配符        A词条        B词条         C词条         无搭配
      * 通配符            护甲+4        不存在       不存在        不存在         不存在
      * A词条             不存在        恢复+10      恢复+10       护甲+2        金币+25
      * B词条             不存在        攻击力+8     奖励攻击率+10  攻击力+8      金币+25
-     * C词条             不存在        生命+75      护盾+75       生命+75       金币+25
+     * C词条             不存在        护盾+75      生命+75       生命+75       金币+25
      * 无搭配            不存在        金币+20      金币+20       金币+20        无奖励
      */
     public void randommap()
@@ -295,5 +308,67 @@ public class LevelMap {
         int entrya=taghash(zoneA.entry1)+taghash(zoneB.entry1)+taghash(zoneC.entry1);
         int entryb=taghash(zoneA.entry2)+taghash(zoneB.entry2)+taghash(zoneC.entry2);
         Entry xa=countEntry(entrya),xb=countEntry(entryb);
+        ShopItem zoneLastItem;
+        int ifcoins=0,coinsnum=0;
+        switch (xa) {
+            case every:
+                zoneLastItem=new ShopItem(6, 4, 0);
+                break;
+            case a:
+                switch (xb) {
+                    case a: case b:
+                        zoneLastItem=new ShopItem(4, 10, 0);
+                        break;
+                    case c:
+                        zoneLastItem=new ShopItem(6, 2, 0);
+                        break;
+                    default:
+                        zoneLastItem=null;
+                        ifcoins=1;
+                        coinsnum=25;
+                        break;
+                }
+                break;
+            case b:
+                switch (xb) {
+                    case a: case c:
+                        zoneLastItem=new ShopItem(0, 8, 0);
+                        break;
+                    case b:
+                        zoneLastItem=new ShopItem(5, 10, 0);
+                        break;
+                    default:
+                        zoneLastItem=null;
+                        ifcoins=1;
+                        coinsnum=25;
+                        break;
+                }
+                break;
+            case c:
+                switch (xb) {
+                    case a:
+                        zoneLastItem=new ShopItem(3, 75, 0);
+                        break;
+                    case b: case c:
+                        zoneLastItem=new ShopItem(1, 75, 0);
+                        break;
+                    default:
+                        zoneLastItem=null;
+                        ifcoins=1;
+                        coinsnum=25;    
+                        break;
+                }
+            default:
+                zoneLastItem=null;
+                if(xb==Entry.none)
+                    ifcoins=2;
+                else
+                {
+                    ifcoins=1;
+                    coinsnum=20;
+                }
+                break;
+        }
+        zoneLast.set(Type.endOfLevel, ifcoins, coinsnum, Entry.none, Entry.none, zoneLastItem, null,null);
     }
 }
