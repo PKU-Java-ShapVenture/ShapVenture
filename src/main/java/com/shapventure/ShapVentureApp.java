@@ -24,6 +24,9 @@ import javafx.stage.Stage;
 import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.profile.DataFile;
 import com.almasb.fxgl.profile.SaveLoadHandler;
+import com.almasb.fxgl.entity.Entity;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
 
@@ -54,6 +57,7 @@ public class ShapVentureApp extends GameApplication {
         vars.put("level", 1);
         vars.put("score", 0);//就按照击败之后增加怪物血量*怪物伤害的值的算法？
         vars.put("levelFinished", true);
+        vars.put("blockNum", 0);//用于记录当前所在的方块编号
         vars.put("message", "Welcome to ShapVenture!");
     }
     @Override
@@ -62,38 +66,58 @@ public class ShapVentureApp extends GameApplication {
         BorderPane topPane = new BorderPane();
 
         // 左侧文字区
+        int leftFontSize = 18;
         VBox leftTextArea = new VBox();
         leftTextArea.setPrefSize(200, 400);
         Label healthLabel = new Label();
-        healthLabel.setFont(new Font(20));
+        healthLabel.setFont(new Font(leftFontSize));
         //这里我想按照 生命值/最大生命值：health/maxhealth 的写法来显示生命值
         healthLabel.textProperty().bind(Bindings.concat("生命值：")
                 .concat(getip("health").asString())
                 .concat("/")
                 .concat(getip("maxhealth").asString()));
-
+        Label shieldLabel = new Label();
+        shieldLabel.setFont(new Font(leftFontSize));
+        shieldLabel.textProperty().bind(Bindings.concat("护盾值：")
+                .concat(getip("shield").asString())
+                .concat("/")
+                .concat(getip("maxshield").asString()));
+        Label recoveryLabel = new Label();
+        recoveryLabel.setFont(new Font(leftFontSize));
+        recoveryLabel.textProperty().bind(getip("recovery").asString("恢复值: %d"));
         Label attackLabel = new Label();
-        attackLabel.setFont(new Font(20));
+        attackLabel.setFont(new Font(leftFontSize));
         attackLabel.textProperty().bind(getip("attack").asString("攻击力: %d"));
+        Label bonusdamagerateLabel = new Label();
+        bonusdamagerateLabel.setFont(new Font(leftFontSize));
+        bonusdamagerateLabel.textProperty().bind(getip("bonusdamagerate").asString("暴击率: %d"));
+        Label armorLabel = new Label();
+        armorLabel.setFont(new Font(leftFontSize));
+        armorLabel.textProperty().bind(getip("armor").asString("护甲值: %d"));
+        Label moneyLabel = new Label();
+        moneyLabel.setFont(new Font(leftFontSize));
+        moneyLabel.textProperty().bind(getip("money").asString("金币: %d"));
+        Label expLabel = new Label();
+        expLabel.setFont(new Font(leftFontSize));
+        expLabel.textProperty().bind(getip("exp").asString("经验: %d"));
         Label levelLabel = new Label();
-        levelLabel.setFont(new Font(20));
+        levelLabel.setFont(new Font(leftFontSize));
         levelLabel.textProperty().bind(getip("level").asString("层数: %d/100"));//一共100层
         Label scoreLabel = new Label();
-        scoreLabel.setFont(new Font(20));
+        scoreLabel.setFont(new Font(leftFontSize));
         scoreLabel.textProperty().bind(getip("score").asString("分数: %d"));
-        leftTextArea.getChildren().addAll(healthLabel, attackLabel, levelLabel, scoreLabel);
+        leftTextArea.getChildren().addAll(healthLabel, shieldLabel, recoveryLabel, attackLabel, bonusdamagerateLabel, armorLabel, moneyLabel, expLabel, levelLabel, scoreLabel);
         topPane.setLeft(leftTextArea);
 
         // 中间显示图形区域
         VBox centerArea = new VBox();
-        centerArea.setPrefSize(400, 400);
-        Label centerText = new Label("图形区域");
-        centerArea.getChildren().add(centerText);
+        centerArea.setPrefSize(300, 400);
+        drawCentreAreaRect(centerArea);
         topPane.setCenter(centerArea);
 
         // 右侧文字区
         VBox rightTextArea = new VBox();
-        rightTextArea.setPrefSize(200, 400);
+        rightTextArea.setPrefSize(300, 400);
         Label rightText = new Label();
         rightText.setFont(new Font(20));
         rightText.setWrapText(true);
@@ -152,6 +176,10 @@ public class ShapVentureApp extends GameApplication {
         FXGL.getGameScene().addUINode(mainPane);
 
         //init save & load service
+        initSaveLoadService();
+    }
+
+    private void initSaveLoadService() {
         getSaveLoadService().addHandler(new SaveLoadHandler() {
             @Override
             public void onSave(DataFile data) {
@@ -220,6 +248,20 @@ public class ShapVentureApp extends GameApplication {
                 set("message", message);
             }
         });
+    }
+
+    private void drawCentreAreaRect(VBox centerArea){
+        Rectangle[] blocks = new Rectangle[4];
+        blocks[0] = new Rectangle(0, 0, 250, 95);
+        blocks[1] = new Rectangle(0, 100, 250, 95);
+        blocks[2] = new Rectangle(0, 200, 250, 95);
+        blocks[3] = new Rectangle(0, 300, 250, 95);
+
+        for (Rectangle block : blocks) {
+            block.setFill(Color.TRANSPARENT);
+            block.setStroke(Color.BLACK);
+            centerArea.getChildren().add(block);
+        }
     }
 
     public static void main(String[] args) {
