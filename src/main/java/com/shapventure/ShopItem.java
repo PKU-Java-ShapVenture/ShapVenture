@@ -58,6 +58,43 @@ public class ShopItem {
             }
         }
         
+        /*返回一条字符串，参数为true则在结尾附带cost及其数值，否则不带；
+         *格式：“基础攻击 37 花费 73”，结尾不会有空格
+         */
+        public String message(boolean includeCost) {
+            String str = new String();
+            switch (itemType) {
+                case 0:
+                    str = "基础攻击 ";
+                    break;
+                case 1:
+                    str = "生命上限 ";
+                    break;
+                case 2:
+                    str = "立即回复 ";
+                    break;
+                case 3:
+                    str = "最大护盾 ";
+                    break;
+                case 4:
+                    str = "击杀修补 ";
+                    break;
+                case 5:
+                    str = "攻击过载 ";
+                    break;
+                case 6:
+                    str = "固定减伤 ";
+                    break;
+
+                default:
+                    break;
+            }
+            str = str + number;
+            if (includeCost)
+                str = str + " 花费 " + cost;
+            return str;
+        }
+
         public void purchase() {
             getip("money").set(geti("money") - cost);
             work();
