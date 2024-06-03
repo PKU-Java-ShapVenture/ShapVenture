@@ -1,10 +1,12 @@
 package com.shapventure;
+
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
 import com.almasb.fxgl.input.UserAction;
+import com.almasb.fxgl.texture.Texture;
 import javafx.beans.binding.Bindings;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyCode;
@@ -12,14 +14,18 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+
 import java.util.Map;
+
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.profile.DataFile;
@@ -29,8 +35,14 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
+import static com.shapventure.ShapeVentureCtrl.loadGame;
 
 public class ShapVentureApp extends GameApplication {
+
+    private Entity player;
+    private Entity block1, block2, block3;
+    private LevelMap levelMap = new LevelMap();
+    private Stage gameOverStage;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -38,7 +50,8 @@ public class ShapVentureApp extends GameApplication {
         settings.setHeight(600);
         settings.setTitle("ShapVenture");
     }
-    /* 
+
+    /*
     初始化游戏变量，可以修改
     如果需要加入局外的成长，可以改里面的常值为一个表达式
     */
@@ -57,9 +70,16 @@ public class ShapVentureApp extends GameApplication {
         vars.put("level", 1);
         vars.put("score", 0);//就按照击败之后增加怪物血量*怪物伤害的值的算法？
         vars.put("levelFinished", true);
-        vars.put("blockNum", 0);//用于记录当前所在的方块编号
-        vars.put("message", "Welcome to ShapVenture!");
+        vars.put("blockNum", 4);//用于记录当前所在的方块编号, 1-3为关卡，4为基地
+        vars.put("wait", false);
+        vars.put("proceed", false);
+        vars.put("pressedA", false);
+        vars.put("pressedB", false);
+        vars.put("pressedC", false);
+        vars.put("gameOver", false);
+        vars.put("message", "欢迎来到ShapVenture!");
     }
+
     @Override
     protected void initUI() {
         // 上方区域
@@ -68,7 +88,7 @@ public class ShapVentureApp extends GameApplication {
         // 左侧文字区
         int leftFontSize = 18;
         VBox leftTextArea = new VBox();
-        leftTextArea.setPrefSize(200, 400);
+        leftTextArea.setPrefSize(200, 450);
         Label healthLabel = new Label();
         healthLabel.setFont(new Font(leftFontSize));
         //这里我想按照 生命值/最大生命值：health/maxhealth 的写法来显示生命值
@@ -111,13 +131,13 @@ public class ShapVentureApp extends GameApplication {
 
         // 中间显示图形区域
         VBox centerArea = new VBox();
-        centerArea.setPrefSize(300, 400);
+        centerArea.setPrefSize(300, 450);
         drawCentreAreaRect(centerArea);
         topPane.setCenter(centerArea);
 
         // 右侧文字区
         VBox rightTextArea = new VBox();
-        rightTextArea.setPrefSize(300, 400);
+        rightTextArea.setPrefSize(300, 450);
         Label rightText = new Label();
         rightText.setFont(new Font(20));
         rightText.setWrapText(true);
@@ -127,7 +147,7 @@ public class ShapVentureApp extends GameApplication {
 
         // 下方按钮区域
         HBox bottomPane = new HBox();
-        bottomPane.setPrefSize(800, 200);
+        bottomPane.setPrefSize(800, 150);
 
         Button button1 = new Button("按钮1");
         button1.setFont(new Font(20));
@@ -167,6 +187,7 @@ public class ShapVentureApp extends GameApplication {
         HBox.setHgrow(spacer3, Priority.ALWAYS);
         HBox.setHgrow(spacer4, Priority.ALWAYS);
 
+
         // 主布局
         BorderPane mainPane = new BorderPane();
         mainPane.setTop(topPane);
@@ -175,8 +196,13 @@ public class ShapVentureApp extends GameApplication {
         // 设置根节点
         FXGL.getGameScene().addUINode(mainPane);
 
-        //init save & load service
-        initSaveLoadService();
+        // 贴图
+        Texture baseTexture = FXGL.getAssetLoader().loadTexture("home.png");
+        baseTexture.setFitWidth(80);
+        baseTexture.setFitHeight(80);
+        baseTexture.setTranslateX(250);
+        baseTexture.setTranslateY(320);
+        FXGL.getGameScene().addUINode(baseTexture);
     }
 
     private void initSaveLoadService() {
@@ -210,7 +236,6 @@ public class ShapVentureApp extends GameApplication {
                 bundle.put("exp", exp);
                 bundle.put("level", level);
                 bundle.put("score", score);
-                bundle.put("levelFinished", levelFinished);
                 bundle.put("message", message);
                 data.putBundle(bundle);
             }
@@ -230,7 +255,6 @@ public class ShapVentureApp extends GameApplication {
                 int exp = bundle.get("exp");
                 int level = bundle.get("level");
                 int score = bundle.get("score");
-                boolean levelFinished = bundle.get("levelFinished");
                 String message = bundle.get("message");
                 set("health", health);
                 set("maxhealth", maxhealth);
@@ -244,18 +268,17 @@ public class ShapVentureApp extends GameApplication {
                 set("exp", exp);
                 set("level", level);
                 set("score", score);
-                set("levelFinished", levelFinished);
                 set("message", message);
             }
         });
     }
 
-    private void drawCentreAreaRect(VBox centerArea){
+    private void drawCentreAreaRect(VBox centerArea) {
         Rectangle[] blocks = new Rectangle[4];
-        blocks[0] = new Rectangle(0, 0, 250, 95);
-        blocks[1] = new Rectangle(0, 100, 250, 95);
-        blocks[2] = new Rectangle(0, 200, 250, 95);
-        blocks[3] = new Rectangle(0, 300, 250, 95);
+        blocks[0] = new Rectangle(0, 0, 250, 100);
+        blocks[1] = new Rectangle(0, 100, 250, 100);
+        blocks[2] = new Rectangle(0, 200, 250, 100);
+        blocks[3] = new Rectangle(0, 300, 250, 100);
 
         for (Rectangle block : blocks) {
             block.setFill(Color.TRANSPARENT);
@@ -264,6 +287,160 @@ public class ShapVentureApp extends GameApplication {
         }
     }
 
+    protected void initGame() {
+        //init save & load service
+        initSaveLoadService();
+        //init map
+        levelMap.randommap();
+        //init player and block
+        Texture playerTexture = FXGL.getAssetLoader().loadTexture("knight.png");
+        playerTexture.setFitHeight(60);
+        playerTexture.setFitWidth(60);
+        Texture block1Texture = FXGL.getAssetLoader().loadTexture("enemy.png");
+        block1Texture.setFitHeight(80);
+        block1Texture.setFitWidth(80);
+        Texture block2Texture = FXGL.getAssetLoader().loadTexture("enemy.png");
+        block2Texture.setFitHeight(80);
+        block2Texture.setFitWidth(80);
+        Texture block3Texture = FXGL.getAssetLoader().loadTexture("enemy.png");
+        block3Texture.setFitHeight(80);
+        block3Texture.setFitWidth(80);
+        player = entityBuilder()
+                .at(350, 340)
+                .view(playerTexture)
+                .buildAndAttach();
+
+        block1 = entityBuilder()
+                .at(250, 220)
+                .view(block1Texture)
+                .buildAndAttach();
+
+        block2 = entityBuilder()
+                .at(250, 120)
+                .view(block2Texture)
+                .buildAndAttach();
+
+        block3 = entityBuilder()
+                .at(250, 20)
+                .view(block3Texture)
+                .buildAndAttach();
+
+
+    }
+
+    @Override
+    protected void onUpdate(double tpf) {
+        if(getb("gameOver")){
+            return;
+        }
+        // update UI
+        block1.getViewComponent().clearChildren();
+        block1.getViewComponent().addChild(getBlockTexture(levelMap.getZone(1).zoneType));
+        block2.getViewComponent().clearChildren();
+        block2.getViewComponent().addChild(getBlockTexture(levelMap.getZone(2).zoneType));
+        block3.getViewComponent().clearChildren();
+        block3.getViewComponent().addChild(getBlockTexture(levelMap.getZone(3).zoneType));
+        player.setY(geti("blockNum") < 4 ? 340 - geti("blockNum") * 100 : 340);
+        if(geti("health") <= 0 || geti("level") >= 100){
+            getbp("gameOver").setValue(true);
+            showGameOverPopup();
+        }
+        if (!getb("levelFinished")) {
+            if (!getb("wait")) {
+                proceed();
+            }
+            else{
+                handleWait();
+            }
+        }
+    }
+
+
+    private void proceed() {
+        int n = geti("blockNum");
+        Zone currentZone = levelMap.getZone(n);
+        getsp("message").setValue(currentZone.zoneMessage());
+        getbp("wait").setValue(true);
+    }
+    private void handleWait(){
+        int n = geti("blockNum");
+        Zone currentZone = levelMap.getZone(n);
+        if(currentZone.zoneType != Type.shop && currentZone.zoneType != Type.ability){
+            currentZone.interact();
+        }
+        else{
+            if(getb("pressedA")){
+                levelMap.getZone(n).itemA.purchase();
+                getbp("pressedA").setValue(false);
+            }
+            else if(getb("pressedB")){
+                levelMap.getZone(n).itemB.purchase();
+                getbp("pressedB").setValue(false);
+            }
+            else if(getb("pressedC")){
+                levelMap.getZone(n).itemC.purchase();
+                getbp("pressedC").setValue(false);
+            }
+            else{
+                return;
+            }
+        }
+
+        getip("blockNum").setValue(n < 4 ? n + 1 : 4);
+        getbp("wait").setValue(false);
+
+        if (n == 4) {
+            getbp("levelFinished").setValue(true);
+            levelMap.randommap();
+            getip("level").setValue(geti("level") + 1);
+        }
+    }
+
+    private void showGameOverPopup() {
+        // 创建新的窗口
+        gameOverStage = new Stage();
+        gameOverStage.initModality(Modality.APPLICATION_MODAL);
+        gameOverStage.setTitle("游戏结束");
+
+        // 创建游戏结束弹窗内容
+        String overMsg;
+        if(geti("level") == 100){
+            overMsg = "你已经到达了第100层，游戏结束";
+
+        }
+        else{
+            overMsg = "你的生命值已经耗尽，游戏结束";
+        }
+        Label gameOverLabel = new Label(overMsg);
+        gameOverLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+
+        Button loadButton = new Button("读档");
+        loadButton.setFont(new Font(20));
+        loadButton.setPrefSize(100, 50);
+        loadButton.setOnAction(e -> {
+            loadGame();
+            gameOverStage.close();
+        });
+
+        VBox vbox = new VBox(10, gameOverLabel, loadButton);
+        vbox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20; -fx-alignment: center;");
+
+        Scene scene = new Scene(vbox, 300, 200);
+        gameOverStage.setScene(scene);
+        gameOverStage.show();
+    }
+    private Texture getBlockTexture(Type type){
+        Texture blockTexture = switch (type) {
+            case enemy -> FXGL.getAssetLoader().loadTexture("enemy.png");
+            case coins -> FXGL.getAssetLoader().loadTexture("coins.png");
+            case shop -> FXGL.getAssetLoader().loadTexture("store.png");
+            case ability -> FXGL.getAssetLoader().loadTexture("ability.png");
+            default -> FXGL.getAssetLoader().loadTexture("tree.png");
+        };
+        blockTexture.setFitWidth(80);
+        blockTexture.setFitHeight(80);
+        return blockTexture;
+    }
     public static void main(String[] args) {
         launch(args);
     }

@@ -29,6 +29,11 @@ public class Zone {
     }
     
     public void interact() {
+        try{
+            Thread.sleep(500);
+        }
+        catch (Exception ignored) {
+        }
         switch (zoneType) {
             case empty:
                 break;
@@ -55,6 +60,7 @@ public class Zone {
                 break;
 
             case coins:
+
                 pickup();
                 break;
 
@@ -76,15 +82,35 @@ public class Zone {
      * 中间以换行符\n相隔开，结尾没有
      */
     public String zoneMessage() {
-        String str = new String("");
-        if (zoneType.equals(Type.shop)) {
-            str = str + itemA.message(true) + "\n";
-            str = str + itemB.message(true) + "\n";
-            str = str + itemC.message(true);
-        } else {
-            str = str + itemA.message(false) + "\n";
-            str = str + itemB.message(false) + "\n";
-            str = str + itemC.message(false);
+        String str = "";
+        switch (zoneType) {
+            case empty:
+                str = "空地";
+                break;
+            case enemy:
+                str = "敌人！\n生命值：" + health + "\n攻击力：" + attack;
+                break;
+            case shop:
+                str = "商店！\n";
+                str = str + "A. " + itemA.message(true) + "\n";
+                str = str + "B. " + itemB.message(true) + "\n";
+                str = str + "C. " + itemC.message(true);
+                break;
+            case ability:
+                str = "宝箱！\n";
+                str = str + "A. " + itemA.message(false) + "\n";
+                str = str + "B. " + itemB.message(false) + "\n";
+                str = str + "C. " + itemC.message(false);
+                break;
+            case coins:
+                str = (health == 1)?"金币！\n":"经验！\n";
+                str = str + "数量：" + attack;
+                break;
+            case endOfLevel:
+                str = "回到基地！\n";
+                break;
+            default:
+                break;
         }
         return str;
     }
@@ -97,7 +123,7 @@ public class Zone {
 
             try{
                 Thread.sleep(100);
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
             ;
 
@@ -123,7 +149,8 @@ public class Zone {
     }
     
     private void levelBonus() {
-        itemA.work();
+        if(itemA != null)
+            itemA.work();
     }
 
     private void pickup() {
@@ -142,5 +169,16 @@ enum Entry {
 
 //Type包含各种可能的地格类型
 enum Type {
-    empty,enemy,shop,ability,coins,endOfLevel
+    empty,enemy,shop,ability,coins,endOfLevel;
+    public String toString() {
+        return switch (this) {
+            case empty -> "空地";
+            case enemy -> "敌人";
+            case shop -> "商店";
+            case ability -> "宝箱";
+            case coins -> "金币";
+            case endOfLevel -> "基地";
+            default -> "错误";
+        };
+    }
 }

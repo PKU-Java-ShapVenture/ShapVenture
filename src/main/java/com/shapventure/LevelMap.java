@@ -48,12 +48,12 @@ public class LevelMap {
             case 2:
                 randomNumber=recentcoin/2;
                 if(randomNumber>geti("maxhealth")-geti("health"))
-                randomNumber=geti("maxhealth")-geti("health");
+                    randomNumber=geti("maxhealth")-geti("health");
                 recentcoin=randomNumber*2;
                 break;
             case 3:
                 randomNumber=recentcoin/5;
-                recentcoin=randomNumber*5-1;
+                recentcoin=Math.max(randomNumber*5-1, 0);
                 break;
             case 4:
                 randomNumber=recentcoin/25;
@@ -150,7 +150,7 @@ public class LevelMap {
         int shoptype2=randomShopType(100, 100, 0, 100, 100, 100, 100);
         int shoptype3=randomShopType(100, 100, 0, 100, 100, 100, 100);
         int randomNumber1=aRandom.nextInt(200)+100,randomNumber2=aRandom.nextInt(200)+100,randomNumber3=aRandom.nextInt(200)+100;
-        int weight[]={20,4,1000,5,25,75};
+        int weight[]={20,4,1000,5,25,20,75};
         ShopItem aShopItem=new ShopItem(shoptype1, randomNumber1/weight[shoptype1], 0);
         ShopItem bShopItem=new ShopItem(shoptype2, randomNumber2/weight[shoptype2], 0);
         ShopItem cShopItem=new ShopItem(shoptype1, randomNumber3/weight[shoptype3], 0);
@@ -222,7 +222,7 @@ public class LevelMap {
                         zoneChance=chance3;
                         break;
                 }
-                normalRandomZone(zoneChance, recentLevel, recentcoin,zonePlace);
+                newZone = normalRandomZone(zoneChance, recentLevel, recentcoin,zonePlace);
                 break;
         }
         return newZone;
@@ -302,9 +302,9 @@ public class LevelMap {
     {
         int currentLevel=geti("level");
         int currentCoin=geti("money");
-        zoneA=randomZone(currentLevel, 0, currentCoin);
-        zoneB=randomZone(currentLevel, 1, currentCoin);
-        zoneC=randomZone(currentLevel, 2, currentCoin);
+        zoneA=randomZone(currentLevel, 1, currentCoin);
+        zoneB=randomZone(currentLevel, 2, currentCoin);
+        zoneC=randomZone(currentLevel, 3, currentCoin);
         int entrya=taghash(zoneA.entry1)+taghash(zoneB.entry1)+taghash(zoneC.entry1);
         int entryb=taghash(zoneA.entry2)+taghash(zoneB.entry2)+taghash(zoneC.entry2);
         Entry xa=countEntry(entrya),xb=countEntry(entryb);
@@ -369,6 +369,21 @@ public class LevelMap {
                 }
                 break;
         }
-        zoneLast.set(Type.endOfLevel, ifcoins, coinsnum, Entry.none, Entry.none, zoneLastItem, null,null);
+        zoneLast.set(Type.endOfLevel, coinsnum, ifcoins, Entry.none, Entry.none, zoneLastItem, null,null);
+    }
+
+    public Zone getZone(int zoneNum){
+        switch(zoneNum){
+            case 1:
+                return zoneA;
+            case 2:
+                return zoneB;
+            case 3:
+                return zoneC;
+            case 4:
+                return zoneLast;
+            default:
+                return null;
+        }
     }
 }
