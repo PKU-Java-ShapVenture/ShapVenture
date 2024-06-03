@@ -121,11 +121,11 @@ public class Zone {
 
         while (health > 0 && geti("health") > 0) {
 
-            try{
-                Thread.sleep(100);
-            } catch (Exception ignored) {
-            }
-            ;
+            //try{
+            //    Thread.sleep(100);
+            //} catch (Exception ignored) {
+            //}
+            //;
 
             //玩家受到的伤害
             takeDamage = Math.max(1, attack - geti("armor"));
