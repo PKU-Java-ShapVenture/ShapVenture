@@ -119,23 +119,29 @@ public class LevelMap {
                         tagA=Entry.a;
                         enemyhealth=(int)(100.0*levelrate);
                         enemyattack=3+recentLevel/2;
+                        break;
                     case 1:
                         tagA=Entry.b;
                         enemyhealth=(int)(50.0*levelrate);
                         enemyattack=5+recentLevel*5/6;
+                        break;
                     case 2:
                         tagA=Entry.c;
                         enemyhealth=(int)(200.0*levelrate);
                         enemyattack=1+recentLevel/4;
+                        break;
                 }
                 switch(aRandom.nextInt(3))
                 {
                     case 0:
                         tagB=Entry.a;
+                        break;
                     case 1:
                         tagB=Entry.b;
+                        break;
                     case 2:
                         tagB=Entry.c;
+                        break;
                 }
                 break;
         }
