@@ -72,6 +72,23 @@ public class Zone {
         return;
     }
 
+    /*返回一条字符串，依次连接itemABC的message
+     * 中间以换行符\n相隔开，结尾没有
+     */
+    public String zoneMessage() {
+        String str = new String("");
+        if (zoneType.equals(Type.shop)) {
+            str = str + itemA.message(true) + "\n";
+            str = str + itemB.message(true) + "\n";
+            str = str + itemC.message(true);
+        } else {
+            str = str + itemA.message(false) + "\n";
+            str = str + itemB.message(false) + "\n";
+            str = str + itemC.message(false);
+        }
+        return str;
+    }
+
     private void fight() {
         Random bonus = new Random();
         int takeDamage = 0, dealDamage = 0;
