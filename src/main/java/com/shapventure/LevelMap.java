@@ -159,7 +159,7 @@ public class LevelMap {
         int weight[]={20,4,1000,5,25,20,75};
         ShopItem aShopItem=new ShopItem(shoptype1, randomNumber1/weight[shoptype1], 0);
         ShopItem bShopItem=new ShopItem(shoptype2, randomNumber2/weight[shoptype2], 0);
-        ShopItem cShopItem=new ShopItem(shoptype1, randomNumber3/weight[shoptype3], 0);
+        ShopItem cShopItem=new ShopItem(shoptype3, randomNumber3/weight[shoptype3], 0);
         newZone.set(Type.ability, 0, 0, Entry.none, Entry.none, aShopItem, bShopItem, cShopItem);
         return newZone;
     }
