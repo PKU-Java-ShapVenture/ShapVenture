@@ -364,6 +364,7 @@ public class LevelMap {
                         coinsnum=25;    
                         break;
                 }
+                break;
             default:
                 zoneLastItem=null;
                 if(xb==Entry.none)

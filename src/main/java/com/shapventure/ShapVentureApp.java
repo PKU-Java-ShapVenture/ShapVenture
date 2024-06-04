@@ -330,7 +330,7 @@ public class ShapVentureApp extends GameApplication {
 
     @Override
     protected void onUpdate(double tpf) {
-        if(getb("gameOver")){
+        if (getb("gameOver")) {
             return;
         }
         // update UI
@@ -341,15 +341,14 @@ public class ShapVentureApp extends GameApplication {
         block3.getViewComponent().clearChildren();
         block3.getViewComponent().addChild(getBlockTexture(levelMap.getZone(3).zoneType));
         player.setY(geti("blockNum") < 4 ? 340 - geti("blockNum") * 100 : 340);
-        if(geti("health") <= 0 || geti("level") >= 100){
+        if (geti("health") <= 0 || geti("level") >= 100) {
             getbp("gameOver").setValue(true);
             showGameOverPopup();
         }
         if (!getb("levelFinished")) {
             if (!getb("wait")) {
                 proceed();
-            }
-            else{
+            } else {
                 handleWait();
             }
         }
@@ -362,26 +361,23 @@ public class ShapVentureApp extends GameApplication {
         getsp("message").setValue(currentZone.zoneMessage());
         getbp("wait").setValue(true);
     }
-    private void handleWait(){
+
+    private void handleWait() {
         int n = geti("blockNum");
         Zone currentZone = levelMap.getZone(n);
-        if(currentZone.zoneType != Type.shop && currentZone.zoneType != Type.ability){
+        if (currentZone.zoneType != Type.shop && currentZone.zoneType != Type.ability) {
             currentZone.interact();
-        }
-        else{
-            if(getb("pressedA")){
+        } else {
+            if (getb("pressedA")) {
                 levelMap.getZone(n).itemA.purchase();
                 getbp("pressedA").setValue(false);
-            }
-            else if(getb("pressedB")){
+            } else if (getb("pressedB")) {
                 levelMap.getZone(n).itemB.purchase();
                 getbp("pressedB").setValue(false);
-            }
-            else if(getb("pressedC")){
+            } else if (getb("pressedC")) {
                 levelMap.getZone(n).itemC.purchase();
                 getbp("pressedC").setValue(false);
-            }
-            else{
+            } else {
                 return;
             }
         }
@@ -404,32 +400,51 @@ public class ShapVentureApp extends GameApplication {
 
         // 创建游戏结束弹窗内容
         String overMsg;
-        if(geti("level") == 100){
-            overMsg = "你已经到达了第100层，游戏结束";
+        if (geti("level") >= 100) {
+            overMsg = "你已经到达了第100层，恭喜获胜！\n你的分数："+geti("score");
 
-        }
-        else{
-            overMsg = "你的生命值已经耗尽，游戏结束";
+        } else {
+            overMsg = "你的生命值已经耗尽，游戏结束！\n你的分数："+geti("score");
         }
         Label gameOverLabel = new Label(overMsg);
-        gameOverLabel.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        gameOverLabel.setFont(Font.font("华文仿宋", FontWeight.BOLD, 20));
 
         Button loadButton = new Button("读档");
-        loadButton.setFont(new Font(20));
-        loadButton.setPrefSize(100, 50);
+        loadButton.setFont(new Font(15));
+        loadButton.setPrefSize(80, 40);
         loadButton.setOnAction(e -> {
             loadGame();
+            levelMap.randommap();
+            gameOverStage.close();
+        });
+        Button restartButton = new Button("重来");
+        restartButton.setFont(new Font(15));
+        restartButton.setPrefSize(80, 40);
+        restartButton.setOnAction(e -> {
+            initVars();
+            levelMap.randommap();
             gameOverStage.close();
         });
 
-        VBox vbox = new VBox(10, gameOverLabel, loadButton);
-        vbox.setStyle("-fx-background-color: rgba(0, 0, 0, 0.8); -fx-padding: 20; -fx-alignment: center;");
+        Button exitButton = new Button("退出");
+        exitButton.setFont(new Font(15));
+        exitButton.setPrefSize(80, 40);
+        exitButton.setOnAction(e -> {
+            gameOverStage.close();
+            getGameController().exit();
+        });
 
-        Scene scene = new Scene(vbox, 300, 200);
+        VBox vbox = new VBox(10, gameOverLabel, loadButton, restartButton, exitButton);
+        vbox.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-padding: 20; -fx-alignment: center;");
+
+        Scene scene = new Scene(vbox, 350, 250);
+        // if directly close this scene, exit the whole game
+        gameOverStage.setOnCloseRequest(e -> getGameController().exit());
         gameOverStage.setScene(scene);
         gameOverStage.show();
     }
-    private Texture getBlockTexture(Type type){
+
+    private Texture getBlockTexture(Type type) {
         Texture blockTexture = switch (type) {
             case enemy -> FXGL.getAssetLoader().loadTexture("enemy.png");
             case coins -> FXGL.getAssetLoader().loadTexture("coins.png");
@@ -441,6 +456,31 @@ public class ShapVentureApp extends GameApplication {
         blockTexture.setFitHeight(80);
         return blockTexture;
     }
+
+    private void initVars() {
+        set("health", 100);
+        set("maxhealth", 100);
+        set("shield", 30);
+        set("maxshield", 30);
+        set("recovery", 10);
+        set("attack", 10);
+        set("bonusdamagerate", 5);
+        set("armor", 1);
+        set("money", 0);
+        set("exp", 0);
+        set("level", 1);
+        set("score", 0);
+        set("levelFinished", true);
+        set("blockNum", 4);
+        set("wait", false);
+        set("proceed", false);
+        set("pressedA", false);
+        set("pressedB", false);
+        set("pressedC", false);
+        set("gameOver", false);
+        set("message", "欢迎来到ShapVenture!");
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
