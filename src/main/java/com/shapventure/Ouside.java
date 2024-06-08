@@ -187,7 +187,18 @@ public class Ouside {
             i++;
         }
         set(oop[0], oop[1], oop[2], oop[3], oop[4], oop[5], oop[6]);
+        act();
         fip.close();
+    }
+
+    public void act() {
+        getip("maxhealth").set(LV2data(Options.maxhealth, maxhealthLV));
+        getip("maxshield").set(LV2data(Options.maxshield, maxshieldLV));
+        getip("recovery").set(LV2data(Options.recovery, recoveryLV));
+        getip("attack").set(LV2data(Options.attack, attackLV));
+        getip("bonusdamagerate").set(LV2data(Options.bonusdamagerate, bonusdamagerateLV));
+        getip("armor").set(LV2data(Options.armor, armorLV));
+        getip("money").set(LV2data(Options.money, moneyLV));
     }
 
     private void set(int _maxhealthLV,
@@ -216,7 +227,7 @@ public class Ouside {
                 } else {
                     getip("exp").set(geti("exp") - expRequired[maxhealthLV]);
                     maxhealthLV += 1;
-                    return true;
+                    break;
                 }
             case maxshield:
                 if (geti("exp") < expRequired[maxshieldLV]
@@ -225,7 +236,7 @@ public class Ouside {
                 } else {
                     getip("exp").set(geti("exp") - expRequired[maxshieldLV]);
                     maxshieldLV += 1;
-                    return true;
+                    break;
                 }
             case recovery:
                 if (geti("exp") < expRequired[recoveryLV]
@@ -234,7 +245,7 @@ public class Ouside {
                 } else {
                     getip("exp").set(geti("exp") - expRequired[recoveryLV]);
                     recoveryLV += 1;
-                    return true;
+                    break;
                 }
             case attack:
                 if (geti("exp") < expRequired[attackLV]
@@ -243,7 +254,7 @@ public class Ouside {
                 } else {
                     getip("exp").set(geti("exp") - expRequired[attackLV]);
                     attackLV += 1;
-                    return true;
+                    break;
                 }
             case bonusdamagerate:
                 if (geti("exp") < expRequired[bonusdamagerateLV]
@@ -252,7 +263,7 @@ public class Ouside {
                 } else {
                     getip("exp").set(geti("exp") - expRequired[bonusdamagerateLV]);
                     bonusdamagerateLV += 1;
-                    return true;
+                    break;
                 }
             case armor:
                 if (geti("exp") < expRequired[armorLV]
@@ -261,7 +272,7 @@ public class Ouside {
                 } else {
                     getip("exp").set(geti("exp") - expRequired[armorLV]);
                     armorLV += 1;
-                    return true;
+                    break;
                 }
             case money:
                 if (geti("exp") < expRequired[moneyLV]
@@ -270,12 +281,14 @@ public class Ouside {
                 } else {
                     getip("exp").set(geti("exp") - expRequired[moneyLV]);
                     moneyLV += 1;
-                    return true;
+                    break;
                 }
 
             default:
                 return false;
         }
+        act();
+        return true;
     }
 
     //当能够降级升级时返回true，否则false
@@ -287,7 +300,7 @@ public class Ouside {
                 } else {
                     maxhealthLV -= 1;
                     getip("exp").set(geti("exp") + expRequired[maxhealthLV]);
-                    return true;
+                    break;
                 }
             case maxshield:
                 if (maxshieldLV == 0) {
@@ -295,7 +308,7 @@ public class Ouside {
                 } else {
                     maxshieldLV -= 1;
                     getip("exp").set(geti("exp") + expRequired[maxshieldLV]);
-                    return true;
+                    break;
                 }
             case recovery:
                 if (recoveryLV == 0) {
@@ -303,7 +316,7 @@ public class Ouside {
                 } else {
                     recoveryLV -= 1;
                     getip("exp").set(geti("exp") + expRequired[recoveryLV]);
-                    return true;
+                    break;
                 }
             case attack:
                 if (attackLV == 0) {
@@ -311,7 +324,7 @@ public class Ouside {
                 } else {
                     attackLV -= 1;
                     getip("exp").set(geti("exp") + expRequired[attackLV]);
-                    return true;
+                    break;
                 }
             case bonusdamagerate:
                 if (bonusdamagerateLV == 0) {
@@ -319,7 +332,7 @@ public class Ouside {
                 } else {
                     bonusdamagerateLV -= 1;
                     getip("exp").set(geti("exp") + expRequired[bonusdamagerateLV]);
-                    return true;
+                    break;
                 }
             case armor:
                 if (armorLV == 0) {
@@ -327,7 +340,7 @@ public class Ouside {
                 } else {
                     armorLV -= 1;
                     getip("exp").set(geti("exp") + expRequired[armorLV]);
-                    return true;
+                    break;
                 }
             case money:
                 if (moneyLV == 0) {
@@ -335,12 +348,14 @@ public class Ouside {
                 } else {
                     moneyLV -= 1;
                     getip("exp").set(geti("exp") + expRequired[moneyLV]);
-                    return true;
+                    break;
                 }
 
             default:
                 return false;
         }
+        act();
+        return true;
     }
 }
 
