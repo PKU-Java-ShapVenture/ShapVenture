@@ -17,7 +17,7 @@ public class Outside {
     final File f = new File("../../../outsideDataSave.txt");
 
     //请勿更改此顺序
-    private int[] level = new int[7];
+    private byte[] level = new byte[7];
     private int expRequired[] = new int[] { 10, 50, 100, 500, 1000 };
     private int[][] data = {
             { 100, 150, 250, 500, 1000, 1500 }, // maxhealth
@@ -50,7 +50,7 @@ public class Outside {
     public void OusideRead() {
         try (FileInputStream fip = new FileInputStream(f)) {
             for (int i = 0; i < 7; i++) {
-                level[i] = fip.read();
+                level[i] = (byte) fip.read();
             }
         } catch (Exception e) {
             e.printStackTrace();
