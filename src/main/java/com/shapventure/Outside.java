@@ -18,6 +18,7 @@ public class Outside {
 
     //请勿更改此顺序
     private byte[] level = new byte[7];
+
     private int expRequired[] = new int[] { 10, 50, 100, 500, 1000 };
     private int[][] data = {
             { 100, 150, 250, 500, 1000, 1500 }, // maxhealth
@@ -41,6 +42,15 @@ public class Outside {
         try (FileOutputStream fop = new FileOutputStream(f, false)) {
             for (int i = 0; i < 7; i++)
                 fop.write(level[i]);
+
+            int EXP = geti("exp");
+            byte exp;
+            for (int i = 0; i < 4; i++) {
+                exp = (byte) EXP;
+                fop.write(exp);
+                EXP >>>= 8;
+            }
+
             fop.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,6 +62,13 @@ public class Outside {
             for (int i = 0; i < 7; i++) {
                 level[i] = (byte) fip.read();
             }
+            
+            int EXP = 0;
+            for (int i = 0; i < 4; i++) {
+                EXP += (byte) fip.read();
+                EXP <<= 8;
+            }
+            getip("exp").set(EXP);
         } catch (Exception e) {
             e.printStackTrace();
         }
