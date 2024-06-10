@@ -399,8 +399,8 @@ public class ShapVentureApp extends GameApplication {
 
         if (n == 4) {
             getbp("levelFinished").setValue(true);
-            levelMap.randommap();
             getip("level").setValue(geti("level") + 1);
+            levelMap.randommap();
         }
     }
 
