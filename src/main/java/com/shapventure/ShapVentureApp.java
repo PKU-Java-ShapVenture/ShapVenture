@@ -109,40 +109,40 @@ public class ShapVentureApp extends GameApplication {
         Label healthLabel = new Label();
         healthLabel.setFont(new Font(leftFontSize));
         //这里我想按照 生命值/最大生命值：health/maxhealth 的写法来显示生命值
-        healthLabel.textProperty().bind(Bindings.concat("生命值：")
+        healthLabel.textProperty().bind(Bindings.concat("当前生命：")
                 .concat(getip("health").asString())
                 .concat("/")
                 .concat(getip("maxhealth").asString()));
         Label shieldLabel = new Label();
         shieldLabel.setFont(new Font(leftFontSize));
-        shieldLabel.textProperty().bind(Bindings.concat("护盾值：")
+        shieldLabel.textProperty().bind(Bindings.concat("当前护盾：")
                 .concat(getip("shield").asString())
                 .concat("/")
                 .concat(getip("maxshield").asString()));
         Label recoveryLabel = new Label();
         recoveryLabel.setFont(new Font(leftFontSize));
-        recoveryLabel.textProperty().bind(getip("recovery").asString("恢复值: %d"));
+        recoveryLabel.textProperty().bind(getip("recovery").asString("击杀修补: %d"));
         Label attackLabel = new Label();
         attackLabel.setFont(new Font(leftFontSize));
-        attackLabel.textProperty().bind(getip("attack").asString("攻击力: %d"));
+        attackLabel.textProperty().bind(getip("attack").asString("基础攻击: %d"));
         Label bonusdamagerateLabel = new Label();
         bonusdamagerateLabel.setFont(new Font(leftFontSize));
-        bonusdamagerateLabel.textProperty().bind(getip("bonusdamagerate").asString("暴击率: %d"));
+        bonusdamagerateLabel.textProperty().bind(getip("bonusdamagerate").asString("攻击过载: %d"));
         Label armorLabel = new Label();
         armorLabel.setFont(new Font(leftFontSize));
-        armorLabel.textProperty().bind(getip("armor").asString("护甲值: %d"));
+        armorLabel.textProperty().bind(getip("armor").asString("固定减伤: %d"));
         Label moneyLabel = new Label();
         moneyLabel.setFont(new Font(leftFontSize));
-        moneyLabel.textProperty().bind(getip("money").asString("金币: %d"));
+        moneyLabel.textProperty().bind(getip("money").asString("当前金币: %d"));
         Label expLabel = new Label();
         expLabel.setFont(new Font(leftFontSize));
-        expLabel.textProperty().bind(getip("exp").asString("经验: %d"));
+        expLabel.textProperty().bind(getip("exp").asString("当前经验: %d"));
         Label levelLabel = new Label();
         levelLabel.setFont(new Font(leftFontSize));
-        levelLabel.textProperty().bind(getip("level").asString("层数: %d/100"));//一共100层
+        levelLabel.textProperty().bind(getip("level").asString("当前层数: %d/100"));//一共100层
         Label scoreLabel = new Label();
         scoreLabel.setFont(new Font(leftFontSize));
-        scoreLabel.textProperty().bind(getip("score").asString("分数: %d"));
+        scoreLabel.textProperty().bind(getip("score").asString("当前分数: %d"));
         leftTextArea.getChildren().addAll(healthLabel, shieldLabel, recoveryLabel, attackLabel, bonusdamagerateLabel, armorLabel, moneyLabel, expLabel, levelLabel, scoreLabel);
         topPane.setLeft(leftTextArea);
 

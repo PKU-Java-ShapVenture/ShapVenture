@@ -140,13 +140,13 @@ enum Options {
     }
     public String toString() {
         return switch (this) {
-            case maxhealth -> "最大生命值";
-            case maxshield -> "最大护盾值";
-            case recovery -> "恢复速度";
-            case attack -> "攻击力";
-            case bonusdamagerate -> "额外伤害比例";
-            case armor -> "护甲";
-            case money -> "金钱";
+            case maxhealth -> "生命上限";
+            case maxshield -> "最大护盾";
+            case recovery -> "击杀修补";
+            case attack -> "基础攻击";
+            case bonusdamagerate -> "攻击过载";
+            case armor -> "固定减伤";
+            case money -> "初始金钱";
             default -> "错误";
         };
     }

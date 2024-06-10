@@ -16,19 +16,19 @@ public class EnhanceScene extends Stage {
         this.outside = _outside;
         setTitle("强化界面");
 
-        VBox root = new VBox(10);
+        VBox root = new VBox(20);
         root.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-padding: 20; -fx-alignment: center;");
         // show current exp
         Label expLabel = new Label();
-        expLabel.textProperty().bind(getip("exp").asString("当前经验值: %d"));
-        expLabel.setStyle("-fx-text-fill: black; -fx-font-size: 16px;");
+        expLabel.textProperty().bind(getip("exp").asString("当前经验值: %d\n各级经验值所需: 10 50 100 500 1000"));
+        expLabel.setStyle("-fx-text-fill: black; -fx-font-size: 16px; -fx-alignment: center;");
         root.getChildren().add(expLabel);
         for (Options option : Options.values()) {
             HBox attributeBox = createAttributeBox(option);
             root.getChildren().add(attributeBox);
         }
 
-        Scene scene = new Scene(root, 400, 300);
+        Scene scene = new Scene(root, 400, 400);
         setScene(scene);
     }
 
@@ -36,11 +36,8 @@ public class EnhanceScene extends Stage {
         HBox box = new HBox(10);
         box.setStyle("-fx-alignment: center;");
 
-        Label nameLabel = new Label(option.toString());
-        nameLabel.setStyle("-fx-text-fill: black; -fx-font-size: 16px;");
-
         Label valueLabel = new Label();
-        valueLabel.textProperty().bind(getip(option.name()).asString());
+        valueLabel.textProperty().bind(getip(option.name()).asString(option.toString() + ": %4d"));
         valueLabel.setStyle("-fx-text-fill: black; -fx-font-size: 16px;");
 
         Button btnIncrease = new Button("+");
@@ -53,7 +50,7 @@ public class EnhanceScene extends Stage {
             outside.degrade(option);
         });
 
-        box.getChildren().addAll(nameLabel, valueLabel, btnIncrease, btnDecrease);
+        box.getChildren().addAll(valueLabel, btnIncrease, btnDecrease);
         return box;
     }
 }
