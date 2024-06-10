@@ -71,7 +71,7 @@ public class LevelMap {
     private Zone randomShop(int recentcoin)
     {
         Zone newzone=new Zone();
-        int chance[]={100,100,geti("health")*200/geti("maxhealth"),100,100,100,50};
+        int chance[]={100,100,(geti("maxhealth")-geti("health"))*200/geti("maxhealth"),100,100,100,50};
         int type1=randomShopType(chance[0],chance[1],chance[2],chance[3],chance[4],chance[5],chance[6]);
         chance[type1]=chance[type1]/11;
         int type2=randomShopType(chance[0],chance[1],chance[2],chance[3],chance[4],chance[5],chance[6]);
