@@ -42,7 +42,11 @@ public class Zone {
                 int score = health * attack;
                 fight();
                 if (health <= 0)
+                {
                     getip("score").set(geti("score") + score);
+                    getip("exp").set(geti("exp") + 5);
+                    getip("money").set(geti("money") + 5);
+                }
                 getip("shield").set(Math.min(geti("maxshield"), geti("shield") + geti("recovery")));
                 break;
             case endOfLevel:
