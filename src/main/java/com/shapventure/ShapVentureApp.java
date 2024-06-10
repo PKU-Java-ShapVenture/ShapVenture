@@ -2,6 +2,8 @@ package com.shapventure;
 
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
+import com.almasb.fxgl.app.scene.FXGLMenu;
+import com.almasb.fxgl.app.scene.SceneFactory;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.input.Input;
@@ -42,7 +44,9 @@ public class ShapVentureApp extends GameApplication {
     private Entity player;
     private Entity block1, block2, block3;
     private LevelMap levelMap = new LevelMap();
-    private Stage gameOverStage;
+
+
+    Outside outside;
 
     @Override
     protected void initSettings(GameSettings settings) {
@@ -79,9 +83,22 @@ public class ShapVentureApp extends GameApplication {
         vars.put("gameOver", false);
         vars.put("message", "欢迎来到ShapVenture!");
     }
+    public void startGame() {
+        FXGL.getGameScene().clearUINodes();
+        set("inGame", true);
+        //init map
+        levelMap.randommap();
+        //init player
+        Texture playerTexture = FXGL.getAssetLoader().loadTexture("knight.png");
+        playerTexture.setFitHeight(60);
+        playerTexture.setFitWidth(60);
+        player.getViewComponent().clearChildren();
+        player.getViewComponent().addChild(playerTexture);
 
-    @Override
-    protected void initUI() {
+
+        initGameUI();
+    }
+    protected void initGameUI() {
         // 上方区域
         BorderPane topPane = new BorderPane();
 
@@ -288,49 +305,43 @@ public class ShapVentureApp extends GameApplication {
     }
 
     protected void initGame() {
-        //init save & load service
-        initSaveLoadService();
-        //init map
-        levelMap.randommap();
+        outside = new Outside();
+        outside.act();
         //init player and block
-        Texture playerTexture = FXGL.getAssetLoader().loadTexture("knight.png");
-        playerTexture.setFitHeight(60);
-        playerTexture.setFitWidth(60);
-        Texture block1Texture = FXGL.getAssetLoader().loadTexture("enemy.png");
-        block1Texture.setFitHeight(80);
-        block1Texture.setFitWidth(80);
-        Texture block2Texture = FXGL.getAssetLoader().loadTexture("enemy.png");
-        block2Texture.setFitHeight(80);
-        block2Texture.setFitWidth(80);
-        Texture block3Texture = FXGL.getAssetLoader().loadTexture("enemy.png");
-        block3Texture.setFitHeight(80);
-        block3Texture.setFitWidth(80);
         player = entityBuilder()
                 .at(350, 340)
-                .view(playerTexture)
                 .buildAndAttach();
 
         block1 = entityBuilder()
                 .at(250, 220)
-                .view(block1Texture)
                 .buildAndAttach();
 
         block2 = entityBuilder()
                 .at(250, 120)
-                .view(block2Texture)
                 .buildAndAttach();
 
         block3 = entityBuilder()
                 .at(250, 20)
-                .view(block3Texture)
                 .buildAndAttach();
-
-
+        //init save & load service
+        initSaveLoadService();
+        showWelcomeScreen();
     }
 
+    private void showWelcomeScreen() {
+        set("inGame", false);
+        player.getViewComponent().clearChildren();
+        block1.getViewComponent().clearChildren();
+        block2.getViewComponent().clearChildren();
+        block3.getViewComponent().clearChildren();
+        outside.OusideRead();
+        FXGL.getGameScene().clearUINodes();
+        WelcomeScene welcomeScene = new WelcomeScene(this);
+        FXGL.getGameScene().addUINode(welcomeScene.getView());
+    }
     @Override
     protected void onUpdate(double tpf) {
-        if (getb("gameOver")) {
+        if (getb("gameOver") || (!getb("inGame"))) {
             return;
         }
         // update UI
@@ -343,6 +354,7 @@ public class ShapVentureApp extends GameApplication {
         player.setY(geti("blockNum") < 4 ? 340 - geti("blockNum") * 100 : 340);
         if (geti("health") <= 0 || geti("level") >= 100) {
             getbp("gameOver").setValue(true);
+            outside.OusideSave();
             showGameOverPopup();
         }
         if (!getb("levelFinished")) {
@@ -394,7 +406,7 @@ public class ShapVentureApp extends GameApplication {
 
     private void showGameOverPopup() {
         // 创建新的窗口
-        gameOverStage = new Stage();
+        Stage gameOverStage = new Stage();
         gameOverStage.initModality(Modality.APPLICATION_MODAL);
         gameOverStage.setTitle("游戏结束");
 
@@ -422,7 +434,7 @@ public class ShapVentureApp extends GameApplication {
         restartButton.setPrefSize(80, 40);
         restartButton.setOnAction(e -> {
             initVars();
-            levelMap.randommap();
+            showWelcomeScreen();
             gameOverStage.close();
         });
 
@@ -457,7 +469,7 @@ public class ShapVentureApp extends GameApplication {
         return blockTexture;
     }
 
-    private void initVars() {
+    void initVars() {
         set("health", 100);
         set("maxhealth", 100);
         set("shield", 30);
@@ -467,7 +479,6 @@ public class ShapVentureApp extends GameApplication {
         set("bonusdamagerate", 5);
         set("armor", 1);
         set("money", 0);
-        set("exp", 0);
         set("level", 1);
         set("score", 0);
         set("levelFinished", true);
@@ -479,6 +490,7 @@ public class ShapVentureApp extends GameApplication {
         set("pressedC", false);
         set("gameOver", false);
         set("message", "欢迎来到ShapVenture!");
+        outside.act();
     }
 
     public static void main(String[] args) {

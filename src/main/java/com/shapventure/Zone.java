@@ -88,7 +88,7 @@ public class Zone {
                 str = "空地";
                 break;
             case enemy:
-                str = "敌人！\n生命值：" + health + "\n攻击力：" + attack;
+                str = "敌人！\n词条1：" + entry1.toString() + "\n词条2："+ entry2.toString() +"\n生命值：" + health + "\n攻击力：" + attack;
                 break;
             case shop:
                 str = "商店！\n";
@@ -108,6 +108,22 @@ public class Zone {
                 break;
             case endOfLevel:
                 str = "回到基地！\n";
+                str = str + "获得奖励：\n";
+                switch (attack) {
+                    case 0:
+                        if(itemA != null)
+                            str = str + itemA.message(false);
+                        break;
+                    case 1:
+                        str = str + "金币 " + health;
+                        break;
+                    case 2:
+                        str = str + "没有！";
+                        break;
+                    default:
+                        str = str + "没有！";
+                        break;
+                }
                 break;
             default:
                 break;
@@ -164,7 +180,18 @@ public class Zone {
 
 //Entry包含敌人的各种词条，every为通配符，none为无词条配组（其他格类型可能使用），boss为boss专属词条
 enum Entry {
-    a, b, c, none, every, boss
+    a, b, c, none, every, boss;
+    public String toString() {
+        return switch (this) {
+            case a -> "平衡型";
+            case b -> "进攻型";
+            case c -> "防御型";
+            case none -> "无";
+            case every -> "通配";
+            case boss -> "BOSS";
+            default -> "错误";
+        };
+    }
 }
 
 //Type包含各种可能的地格类型
