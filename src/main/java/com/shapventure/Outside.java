@@ -102,6 +102,7 @@ public class Outside {
             getip("exp").set(geti("exp") - expRequired[level[option.toi()]]);
             level[option.toi()]++;
             act();
+            OusideSave();
             return true;
         }
     }
@@ -115,6 +116,7 @@ public class Outside {
             level[option.toi()]--;
             getip("exp").set(geti("exp") + expRequired[level[option.toi()]]);
             act();
+            OusideSave();
             return true;
         }
     }
