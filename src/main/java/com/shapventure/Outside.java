@@ -85,6 +85,7 @@ public class Outside {
         getip("maxhealth").set(LV2data(Options.maxhealth, level[0]));
         getip("health").set(LV2data(Options.maxhealth, level[0]));
         getip("maxshield").set(LV2data(Options.maxshield, level[1]));
+        getip("shield").set(LV2data(Options.maxshield, level[1]));
         getip("recovery").set(LV2data(Options.recovery, level[2]));
         getip("attack").set(LV2data(Options.attack, level[3]));
         getip("bonusdamagerate").set(LV2data(Options.bonusdamagerate, level[4]));
